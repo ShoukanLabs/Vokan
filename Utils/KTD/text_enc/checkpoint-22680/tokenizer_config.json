@@ -1,0 +1,74 @@
+{
+  "added_tokens_decoder": {
+    "0": {
+      "content": "<pad>",
+      "lstrip": false,
+      "normalized": false,
+      "rstrip": false,
+      "single_word": false,
+      "special": true
+    },
+    "1": {
+      "content": "<unk>",
+      "lstrip": false,
+      "normalized": false,
+      "rstrip": false,
+      "single_word": false,
+      "special": true
+    },
+    "2": {
+      "content": "[CLS]",
+      "lstrip": false,
+      "normalized": false,
+      "rstrip": false,
+      "single_word": false,
+      "special": true
+    },
+    "3": {
+      "content": "[SEP]",
+      "lstrip": false,
+      "normalized": false,
+      "rstrip": false,
+      "single_word": false,
+      "special": true
+    },
+    "4": {
+      "content": "[MASK]",
+      "lstrip": true,
+      "normalized": false,
+      "rstrip": false,
+      "single_word": false,
+      "special": true
+    }
+  },
+  "auto_map": {
+    "AutoTokenizer": [
+      "line-corporation/line-distilbert-base-japanese--distilbert_japanese_tokenizer.DistilBertJapaneseTokenizer",
+      null
+    ]
+  },
+  "bos_token": "[CLS]",
+  "clean_up_tokenization_spaces": false,
+  "cls_token": "[CLS]",
+  "do_lower_case": true,
+  "do_subword_tokenize": true,
+  "do_word_tokenize": true,
+  "eos_token": "[SEP]",
+  "jumanpp_kwargs": null,
+  "keep_accents": true,
+  "mask_token": "[MASK]",
+  "mecab_kwargs": {
+    "mecab_dic": "unidic_lite"
+  },
+  "model_max_length": 1000000000000000019884624838656,
+  "never_split": null,
+  "pad_token": "<pad>",
+  "remove_space": true,
+  "sep_token": "[SEP]",
+  "subword_tokenizer_type": "sentencepiece",
+  "sudachi_kwargs": null,
+  "tokenize_chinese_chars": false,
+  "tokenizer_class": "DistilBertJapaneseTokenizer",
+  "unk_token": "<unk>",
+  "word_tokenizer_type": "mecab"
+}
