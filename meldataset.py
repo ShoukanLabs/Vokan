@@ -48,7 +48,7 @@ class TextCleaner:
             try:
                 indexes.append(self.word_index_dictionary[char])
             except KeyError:
-                print("Meld " + char + ": " + text)
+                pass
         return indexes
 
 

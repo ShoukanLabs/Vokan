@@ -5,7 +5,7 @@ log_interval: 10
 device: "cuda"
 epochs_1st: 50 # number of epochs for first stage training (pre-training)
 epochs_2nd: 30 # number of peochs for second stage training (joint training)
-probe_batch: 70 # whether to automatically determine batch sizes, serves as max batch (set to None otherwise or when already calculated)
+probe_batch: 50 # whether to automatically determine batch sizes, serves as max batch (set to None otherwise or when already calculated)
 second_stage_load_pretrained: false # set to true if the pre-trained model is for 2nd stage
 load_only_params: false # set to true if do not want to load epoch numbers and optimizer parameters
 debug: false
