@@ -1,4 +1,4 @@
-log_dir: "Models/LibriTTS-test-30"
+log_dir: "Models/DynamicBatching"
 #first_stage_path: "epoch_1st_00040.pth" #This is the path within the models/log_dir, not the relative path from where it's being run. 
 save_freq: 10
 log_interval: 10
@@ -21,7 +21,7 @@ PLBERT_dir: 'StyleTTS2Utils/PLBERT/'
 data_params:
   train_data: data_paths/train_data_filtered.txt
   val_data: data_paths/val_data_filtered.txt
-  root_path: ""
+  root_path: "data_paths/"
   OOD_data: data_paths/ood_data_filtered.txt
   min_length: 50 # sample until texts with this size are obtained for OOD texts
 
