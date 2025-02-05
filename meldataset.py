@@ -60,8 +60,6 @@ MEL_PARAMS = {
 }
 
 
-
-
 def preprocess(wave, sr, hop, win, nfft):
     # wave_tensor = torch.from_numpy(wave).float()
     wave_tensor = wave
@@ -78,20 +76,19 @@ def preprocess(wave, sr, hop, win, nfft):
 
 class FilePathDataset(torch.utils.data.Dataset):
     def __init__(
-        self,
-        data_list,
-        root_path,
-        sr=24000,
-        data_augmentation=False,
-        validation=False,
-        OOD_data="Data/OOD_texts.txt",
-        min_length=50,
-        multispeaker=False,
-        hop=300,
-        win=1200,
-        nfft=2048,
+            self,
+            data_list,
+            root_path,
+            sr=24000,
+            data_augmentation=False,
+            validation=False,
+            OOD_data="Data/OOD_texts.txt",
+            min_length=50,
+            multispeaker=False,
+            hop=300,
+            win=1200,
+            nfft=2048,
     ):
-
 
         self.cache = {}
         _data_list = [l.strip().split("|") for l in data_list]
@@ -227,8 +224,8 @@ class FilePathDataset(torch.utils.data.Dataset):
         if mel_length > self.max_mel_length:
             random_start = np.random.randint(0, mel_length - self.max_mel_length)
             mel_tensor = mel_tensor[
-                :, random_start : random_start + self.max_mel_length
-            ]
+                         :, random_start: random_start + self.max_mel_length
+                         ]
 
         return mel_tensor, speaker_id
 
@@ -276,14 +273,14 @@ class Collater(object):
         ).float()  # [None for _ in range(batch_size)]
 
         for bid, (
-            label,
-            mel,
-            text,
-            ref_text,
-            ref_mel,
-            ref_label,
-            path,
-            wave,
+                label,
+                mel,
+                text,
+                ref_text,
+                ref_mel,
+                ref_label,
+                path,
+                wave,
         ) in enumerate(batch):
             mel_size = mel.size(1)
             text_size = text.size(0)
@@ -315,21 +312,20 @@ class Collater(object):
 
 
 def build_dataloader(
-    path_list,
-    root_path,
-    validation=False,
-    OOD_data="Data/OOD_texts.txt",
-    min_length=50,
-    batch_size={},
-    num_workers=1,
-    device="cpu",
-    collate_config={},
-    dataset_config={},
-    probe_batch=None,
-    drop_last=True,
-    multispeaker=False,
+        path_list,
+        root_path,
+        validation=False,
+        OOD_data="Data/OOD_texts.txt",
+        min_length=50,
+        batch_size={},
+        num_workers=1,
+        device="cpu",
+        collate_config={},
+        dataset_config={},
+        probe_batch=None,
+        drop_last=True,
+        multispeaker=False,
 ):
-
     dataset = FilePathDataset(
         path_list,
         root_path,
@@ -365,14 +361,14 @@ def build_dataloader(
 
 class DynamicBatchSampler(torch.utils.data.Sampler):
     def __init__(
-        self,
-        sample_lengths,
-        batch_sizes,
-        num_replicas=None,
-        rank=None,
-        shuffle=True,
-        seed=0,
-        drop_last=False,
+            self,
+            sample_lengths,
+            batch_sizes,
+            num_replicas=None,
+            rank=None,
+            shuffle=True,
+            seed=0,
+            drop_last=False,
     ):
         self.batch_sizes = batch_sizes
         if num_replicas is None:
@@ -470,23 +466,27 @@ class DynamicBatchSampler(torch.utils.data.Sampler):
 
 class BatchManager:
     def __init__(
-        self,
-        train_path,
-        log_dir,
-        probe_batch=None,
-        root_path="",
-        OOD_data=[],
-        min_length=50,
-        device="cpu",
-        accelerator=None,
-        log_print=None,
-        multispeaker=False,
-        dataset_config={},
+            self,
+            train_path,
+            log_dir,
+            probe_batch=None,
+            root_path="",
+            OOD_data=[],
+            min_length=50,
+            device="cpu",
+            accelerator=None,
+            log_print=None,
+            multispeaker=False,
+            dataset_config={},
     ):
         self.train_path = train_path
         self.probe_batch = probe_batch
         self.log_dir = log_dir
         self.log_print = log_print
+
+        batch_file = osp.join(self.log_dir, "batch_sizes.json")
+        if osp.isfile(batch_file):
+            self.probe_batch = None
 
         self.batch_dict = {}
         if self.probe_batch is False or self.probe_batch is None:
@@ -533,7 +533,7 @@ class BatchManager:
             json.dump(self.batch_dict, o)
 
     def epoch_loop(self, epoch, train_batch, debug=False, train=None):
-        if self.probe_batch is not None:
+        if self.probe_batch is not None or self.probe_batch is False:
             self.probe_loop(train_batch, train)
         else:
             self.train_loop(epoch, train_batch, debug, train=train)

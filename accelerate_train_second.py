@@ -71,7 +71,7 @@ def main(config_path):
     file_handler.setFormatter(logging.Formatter('%(levelname)s:%(asctime)s: %(message)s'))
     logger.logger.addHandler(file_handler)
 
-    batch_size = config.get('batch_size', 10)
+    batch_size = config.get('batch_size', 2)
 
     epochs = config.get('epochs_2nd', 200)
     log_interval = 10
