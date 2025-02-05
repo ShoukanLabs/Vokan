@@ -512,6 +512,8 @@ class BatchManager:
             probe_batch=probe_batch,
             multispeaker=multispeaker,
         )
+        # Store original sampler before accelerator preparation
+        self.original_sampler = self.loader.batch_sampler
         if accelerator is not None:
             accelerator.even_batches = False
             self.loader = accelerator.prepare(self.loader)
@@ -542,7 +544,7 @@ class BatchManager:
     def probe_loop(self, train_batch, train):
         self.batch_dict = {}
         batch_size = self.probe_batch
-        sampler = self.loader.batch_sampler
+        sampler = self.original_sampler
         time_keys = sorted(list(sampler.time_bins.keys()))
         max_frame_size = get_frame_count(time_keys[-1])
         for key in time_keys:
