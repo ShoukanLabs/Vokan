@@ -1,6 +1,9 @@
+import io
+
 from monotonic_align import maximum_path
 from monotonic_align import mask_from_lens
 from monotonic_align.core import maximum_path_c
+import soundfile as sf
 import numpy as np
 import torch
 import copy
@@ -10,6 +13,7 @@ import torchaudio
 import librosa
 import matplotlib.pyplot as plt
 from munch import Munch
+import os
 
 
 def maximum_path(neg_cent, mask):
@@ -32,18 +36,12 @@ def maximum_path(neg_cent, mask):
     return torch.from_numpy(path).to(device=device, dtype=dtype)
 
 
-def get_data_path_list(train_path=None, val_path=None):
-    if train_path is None:
-        train_path = "Data/train_list.txt"
-    if val_path is None:
-        val_path = "Data/val_list.txt"
-
-    with open(train_path, "r", encoding="utf-8", errors="ignore") as f:
-        train_list = f.readlines()
-    with open(val_path, "r", encoding="utf-8", errors="ignore") as f:
-        val_list = f.readlines()
-
-    return train_list, val_list
+def get_data_path_list(path):
+    result = []
+    if os.path.isfile(path):
+        with open(path, "r", encoding="utf-8", errors="ignore") as f:
+            result = f.readlines()
+    return result
 
 
 def length_to_mask(lengths):
@@ -73,6 +71,13 @@ def get_image(arrs):
     ax.imshow(arrs)
 
     return fig
+
+# Convert audio to a WAV file buffer
+def audio_to_wav_buffer(audio_np, sample_rate=16000):
+    buffer = io.BytesIO()
+    sf.write(buffer, audio_np, sample_rate, format='WAV')
+    buffer.seek(0)
+    return buffer.read()  # Return bytes for logging
 
 
 def recursive_munch(d):

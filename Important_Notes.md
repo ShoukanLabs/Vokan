@@ -1,4 +1,6 @@
 
+# FROM THE TSUKASA REPO
+
 1. **Enabling the Diffusion sampler breaks the output:**
 
 *Unfortunately, depending on your hardware, the diffusion sampler may not work. This issue is beyond my control and seems to be related to how different hardware handles floating point operations. I can confirm that it works on A40, V100, and Google Colab's T4 GPUs, though it is not guaranteed to work even if you have the same GPUs. It doesn't matter if you use CPUs; the issue persists. This was a serious problem in the original StyleTTS2, but with the different ways of sampling i have included, you can simply turn off the diffusion sampler and use other methods for sampling the vectors, hopefully with minimal or no hit to the quality.*
@@ -24,7 +26,7 @@
 
 7. **Supporting English (or other languages):**
 
-*There is a wide gap between English and other languages, so I mostly focus on non-English projects. but the good folks at Shoukan labs are trying to train a multilingual model with English included. however, if i ever do myself, it'll be focused on something specific (let's say accents).*
+*There is a wide gap between English and other languages, so I mostly focus on non-English projects. but the good folks at ShoukanLabs are trying to train a multilingual model with English included. however, if i ever do myself, it'll be focused on something specific (let's say accents).*
 
 8. **Can I use the DDP on the original StyleTTS without any of your modifications?**
 

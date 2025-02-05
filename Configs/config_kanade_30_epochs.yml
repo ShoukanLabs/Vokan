@@ -5,10 +5,13 @@ log_interval: 10
 device: "cuda"
 epochs_1st: 50 # number of epochs for first stage training (pre-training)
 epochs_2nd: 30 # number of peochs for second stage training (joint training)
-batch_size: 4
+probe_batch: false # whether to automatically determine batch sizes
+batch_size: 4 # now max batch size (max_len * batch size internally)
 max_len: 512 # maximum number of frames
 second_stage_load_pretrained: false # set to true if the pre-trained model is for 2nd stage
 load_only_params: false # set to true if do not want to load epoch numbers and optimizer parameters
+debug: false
+tracker: wandb
 
 F0_path: "StyleTTS2Utils/JDC/bst.t7"
 ASR_config: "StyleTTS2Utils/ASR/config.yml"
@@ -18,7 +21,7 @@ PLBERT_dir: 'StyleTTS2Utils/PLBERT/'
 
 
 data_params:
-  train_data: data_paths/train_data_filtered.txt
+  train_data: data_paths/ # now dir to bins
   val_data: data_paths/val_data_filtered.txt
   root_path: ""
   OOD_data: data_paths/ood_data_filtered.txt

@@ -28,13 +28,13 @@ class SpectralConvergengeLoss(torch.nn.Module):
 class STFTLoss(torch.nn.Module):
     """STFT loss module."""
 
-    def __init__(self, fft_size=1024, shift_size=120, win_length=600, window=torch.hann_window):
+    def __init__(self, fft_size=1024, shift_size=120, win_length=600, window=torch.hann_window, sr=24000):
         """Initialize STFT loss module."""
         super(STFTLoss, self).__init__()
         self.fft_size = fft_size
         self.shift_size = shift_size
         self.win_length = win_length
-        self.to_mel = torchaudio.transforms.MelSpectrogram(sample_rate=24000, n_fft=fft_size, win_length=win_length, hop_length=shift_size, window_fn=window)
+        self.to_mel = torchaudio.transforms.MelSpectrogram(sample_rate=sr, n_fft=fft_size, win_length=win_length, hop_length=shift_size, window_fn=window)
 
         self.spectral_convergenge_loss = SpectralConvergengeLoss()
 
@@ -66,7 +66,8 @@ class MultiResolutionSTFTLoss(torch.nn.Module):
                  fft_sizes=[1024, 2048, 512],
                  hop_sizes=[120, 240, 50],
                  win_lengths=[600, 1200, 240],
-                 window=torch.hann_window):
+                 window=torch.hann_window,
+                 sr=24000):
         """Initialize Multi resolution STFT loss module.
         Args:
             fft_sizes (list): List of FFT sizes.
@@ -78,7 +79,7 @@ class MultiResolutionSTFTLoss(torch.nn.Module):
         assert len(fft_sizes) == len(hop_sizes) == len(win_lengths)
         self.stft_losses = torch.nn.ModuleList()
         for fs, ss, wl in zip(fft_sizes, hop_sizes, win_lengths):
-            self.stft_losses += [STFTLoss(fs, ss, wl, window)]
+            self.stft_losses += [STFTLoss(fs, ss, wl, window, sr)]
 
     def forward(self, x, y):
         """Calculate forward propagation.
