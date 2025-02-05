@@ -158,7 +158,7 @@ def main(config_path):
                                           root_path,
                                           OOD_data=OOD_data,
                                           min_length=min_length,
-                                          batch_size=batch_size,
+                                          batch_size={},
                                           validation=True,
                                           num_workers=0,
                                           device=device,

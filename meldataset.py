@@ -484,9 +484,9 @@ class BatchManager:
         self.log_dir = log_dir
         self.log_print = log_print
 
-        # batch_file = osp.join(self.log_dir, "batch_sizes.json")
-        # if osp.isfile(batch_file):
-        #     self.probe_batch = None
+        batch_file = osp.join(self.log_dir, "batch_sizes.json")
+        if osp.isfile(batch_file):
+            self.probe_batch = None
 
         self.batch_dict = {}
         if self.probe_batch is None:
