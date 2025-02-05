@@ -279,7 +279,7 @@ def main(config_path):
                 wav = waves
 
                 # clip too short to be used by the style encoder
-                if gt.shape[-1] < 40:
+                if gt.shape[-1] < 80:
                     log_print("Skipping batch. TOO SHORT", logger)
                     return running_loss, iters
 
@@ -501,9 +501,7 @@ def main(config_path):
                     gt = torch.stack(gt).detach()
 
                     # clip too short to be used by the style encoder
-                    if gt.shape[-1] < 40 or (
-                        gt.shape[-1] < 80 and not model_params.skip_downsamples
-                    ):
+                    if gt.shape[-1] < 80:
                         log_print("Skipping batch. TOO SHORT", logger)
                         continue
 

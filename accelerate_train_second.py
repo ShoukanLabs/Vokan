@@ -433,7 +433,7 @@ def main(config_path):
             # mel_len = min([int(mel_input_length_all.min().item() / 2 - 1), max_len // 2])
 
             wav = waves
-            if mels.shape[-1] < 40:
+            if mels.shape[-1] < 80:
                 log_print("Skipping batch. TOO SHORT", logger)
                 return running_loss, iters
 
@@ -641,7 +641,7 @@ def main(config_path):
                             d_gt = s2s_attn_mono.sum(axis=-1).detach()
 
                         # clip too short to be used by the style encoder
-                        if mels.shape[-1] < 40:
+                        if mels.shape[-1] < 80:
                             log_print("Skipping batch. TOO SHORT", logger)
                             continue
 
