@@ -848,17 +848,17 @@ def main(config_path):
         batch_manager.epoch_loop(epoch, train_batch, train=None)
         validate(epoch, -1, True)
 
-        if accelerator.is_main_process:
-            print('Saving last pth..')
-            state = {
-                "net": {key: accelerator.get_state_dict(model[key]) for key in model},
-                "optimizer": accelerator.get_state_dict(optimizer),
-                "iters": iters,
-                "val_loss": loss_test / iters_test,
-                "epoch": epoch,
-            }
-            save_path = osp.join(log_dir, '2nd_phase_last.pth')
-            torch.save(state, save_path)
+    if accelerator.is_main_process:
+        print('Saving last pth..')
+        state = {
+            "net": {key: accelerator.get_state_dict(model[key]) for key in model},
+            "optimizer": accelerator.get_state_dict(optimizer),
+            "iters": iters,
+            "val_loss": loss_test / iters_test,
+            "epoch": epoch,
+        }
+        save_path = osp.join(log_dir, '2nd_phase_last.pth')
+        torch.save(state, save_path)
 
     accelerator.end_training()
 
