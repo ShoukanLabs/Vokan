@@ -325,7 +325,7 @@ def build_dataloader(
     device="cpu",
     collate_config={},
     dataset_config={},
-    probe_batch=False,
+    probe_batch=None,
     drop_last=True,
     multispeaker=False,
 ):
@@ -473,7 +473,7 @@ class BatchManager:
         self,
         train_path,
         log_dir,
-        probe_batch=False,
+        probe_batch=None,
         root_path="",
         OOD_data=[],
         min_length=50,
@@ -489,7 +489,7 @@ class BatchManager:
         self.log_print = log_print
 
         self.batch_dict = {}
-        if self.probe_batch is False:
+        if self.probe_batch is False or self.probe_batch is None:
             batch_file = osp.join(self.log_dir, "batch_sizes.json")
             if osp.isfile(batch_file):
                 with open(batch_file, "r") as batch_input:
@@ -533,7 +533,7 @@ class BatchManager:
             json.dump(self.batch_dict, o)
 
     def epoch_loop(self, epoch, train_batch, debug=False, train=None):
-        if self.probe_batch is not False:
+        if self.probe_batch is not None:
             self.probe_loop(train_batch, train)
         else:
             self.train_loop(epoch, train_batch, debug, train=train)
