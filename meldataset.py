@@ -494,6 +494,7 @@ class BatchManager:
             if osp.isfile(batch_file):
                 with open(batch_file, "r") as batch_input:
                     self.batch_dict = json.load(batch_input)
+
         train_list = utils.get_data_path_list(self.train_path)
         if len(train_list) == 0:
             print("Could not open train_list", self.train_path)
