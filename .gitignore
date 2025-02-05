@@ -4,3 +4,6 @@ Models/
 __pycache__/
 .Trash-1000/
 *.slurm
+*.pth
+*.t7
+*.safetensors
