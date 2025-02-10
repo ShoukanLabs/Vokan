@@ -352,18 +352,19 @@ def create_batched_dataloaders(train_dir,
             train_list, _ = get_data_path_list(train_file_path, None)
 
             # Build the dataloader for this training file.
-            dataloader = build_dataloader(
-                train_list,
-                root_path,
-                OOD_data=OOD_data,
-                min_length=min_length,
-                batch_size=local_batch_size,
-                num_workers=num_workers_train,
-                dataset_config=dataset_config,
-                device=device
-            )
+            if local_batch_size > 0:
+                dataloader = build_dataloader(
+                    train_list,
+                    root_path,
+                    OOD_data=OOD_data,
+                    min_length=min_length,
+                    batch_size=local_batch_size,
+                    num_workers=num_workers_train,
+                    dataset_config=dataset_config,
+                    device=device
+                )
 
-            train_dataloaders.append(dataloader)
+                train_dataloaders.append(dataloader)
 
     # --- Build the Validation Dataloader ---
     # We assume that when calling get_data_path_list with train_path as None,
