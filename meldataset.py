@@ -1,6 +1,7 @@
 #coding: utf-8
 import os
 import os.path as osp
+import re
 import time
 import random
 import numpy as np
@@ -13,6 +14,8 @@ from torch import nn
 import torch.nn.functional as F
 import torchaudio
 from torch.utils.data import DataLoader
+
+from utils import get_data_path_list
 
 import logging
 logger = logging.getLogger(__name__)
@@ -38,16 +41,10 @@ class TextCleaner:
     def __call__(self, text):
         indexes = []
         for char in text:
-            if char in self.word_index_dictionary:
-                indexes.append(self.word_index_dictionary[char])
-        '''
-        for char in text:
             try:
                 indexes.append(self.word_index_dictionary[char])
             except KeyError:
-                
-                print(text)
-        '''
+                pass
         return indexes
 
 np.random.seed(1)
@@ -61,13 +58,13 @@ MEL_PARAMS = {
     "n_mels": 80,
 }
 
-to_mel = torchaudio.transforms.MelSpectrogram(
-    
-    n_mels=80, n_fft=2048, win_length=1200, hop_length=300)
-mean, std = -4, 4
 
-def preprocess(wave):
+def preprocess(wave, sr, hop, win, nfft):
     wave_tensor = torch.from_numpy(wave).float()
+    to_mel = torchaudio.transforms.MelSpectrogram(
+        n_mels=80, n_fft=nfft, win_length=win, hop_length=hop, sample_rate=sr
+    )
+    mean, std = -4, 4
     mel_tensor = to_mel(wave_tensor)
     mel_tensor = (torch.log(1e-5 + mel_tensor.unsqueeze(0)) - mean) / std
     return mel_tensor
@@ -81,6 +78,9 @@ class FilePathDataset(torch.utils.data.Dataset):
                  validation=False,
                  OOD_data="Data/OOD_texts.txt",
                  min_length=50,
+                 hop=300,
+                 win=1200,
+                 nfft=2048,
                  ):
 
         spect_params = SPECT_PARAMS
@@ -90,6 +90,10 @@ class FilePathDataset(torch.utils.data.Dataset):
         self.data_list = [data if len(data) == 3 else (*data, 0) for data in _data_list]
         self.text_cleaner = TextCleaner()
         self.sr = sr
+
+        self.hop = hop
+        self.win = win
+        self.nfft = nfft
 
         self.df = pd.DataFrame(self.data_list)
 
@@ -116,7 +120,7 @@ class FilePathDataset(torch.utils.data.Dataset):
         
         wave, text_tensor, speaker_id = self._load_tensor(data)
         
-        mel_tensor = preprocess(wave).squeeze()
+        mel_tensor = preprocess(wave, self.sr, self.hop, self.win, self.nfft).squeeze()
         
         acoustic_feature = mel_tensor.squeeze()
         length_feature = acoustic_feature.size(1)
@@ -278,3 +282,103 @@ def build_dataloader(path_list,
                              pin_memory=(device != 'cpu'))
 
     return data_loader
+
+
+def create_batched_dataloaders(train_dir,
+                               val_path,
+                               root_path,
+                               OOD_data,
+                               min_length,
+                               val_batch_size=2,
+                               num_workers_train=2,
+                               num_workers_val=0,
+                               device="cpu",
+                               dataset_config=None):
+    """
+    Create training and validation dataloaders based on a directory of batch files and a validation file.
+
+    Training files are expected to be named in the format:
+
+        wavs_batch[<batch_size>]_<primary_bucket_index>_<sub_bucket_index>.txt
+
+    The <batch_size> extracted from the filename is automatically passed to the dataloader builder.
+    If the batch size cannot be extracted, a default batch size of 2 will be used.
+
+    Parameters:
+      - train_dir (str): Directory containing training text files.
+      - val_path (str): Path to the validation text file.
+      - root_path (str): Root directory to prepend to the relative paths in the data lists.
+      - OOD_data (Any): Out-of-distribution data specification (passed to build_dataloader).
+      - min_length (float): Minimum length requirement (passed to build_dataloader).
+      - val_batch_size (int): Batch size to use for the validation dataloader (default: 2).
+      - num_workers_train (int): Number of workers for the training dataloaders (default: 2).
+      - num_workers_val (int): Number of workers for the validation dataloader (default: 0).
+      - device (str or torch.device): Device to use (e.g., "cpu" or "cuda").
+      - dataset_config (dict): Optional dictionary with additional dataset configuration.
+
+    Returns:
+      - train_dataloaders (list): A list containing a dataloader for each training batch file.
+      - val_dataloader: A single validation dataloader.
+
+    Note:
+      This function assumes that get_data_path_list() and build_dataloader() are defined elsewhere.
+    """
+
+    # Ensure we have a valid (possibly empty) configuration dictionary.
+    if dataset_config is None:
+        dataset_config = {}
+
+    train_dataloaders = []
+
+    # Loop over each file in the training directory.
+    for filename in os.listdir(train_dir):
+        # We only care about .txt files that follow the naming convention.
+        if filename.endswith(".txt") and "wavs_batch" in filename:
+            # Extract the batch size from the filename.
+            match = re.search(r"wavs_batch\[(\d+)\]", filename)
+            if match:
+                local_batch_size = int(match.group(1))
+            else:
+                # If no match is found, default to batch size of 2.
+                print(
+                    f"Warning: Could not determine batch size from filename '{filename}'. Using default batch size 2.")
+                local_batch_size = 2
+
+            # Full path to the current training file.
+            train_file_path = os.path.join(train_dir, filename)
+
+            # Get the training data list from the file.
+            # Here we call get_data_path_list with the training file; the second argument is unused so we pass None.
+            train_list, _ = get_data_path_list(train_file_path, None)
+
+            # Build the dataloader for this training file.
+            dataloader = build_dataloader(
+                train_list,
+                root_path,
+                OOD_data=OOD_data,
+                min_length=min_length,
+                batch_size=local_batch_size,
+                num_workers=num_workers_train,
+                dataset_config=dataset_config,
+                device=device
+            )
+
+            train_dataloaders.append(dataloader)
+
+    # --- Build the Validation Dataloader ---
+    # We assume that when calling get_data_path_list with train_path as None,
+    # it returns (None, val_list).
+    _, val_list = get_data_path_list(None, val_path)
+    val_dataloader = build_dataloader(
+        val_list,
+        root_path,
+        OOD_data=OOD_data,
+        min_length=min_length,
+        batch_size=val_batch_size,
+        validation=True,
+        num_workers=num_workers_val,
+        device=device,
+        dataset_config=dataset_config
+    )
+
+    return train_dataloaders, val_dataloader

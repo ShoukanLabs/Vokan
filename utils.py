@@ -1,3 +1,5 @@
+import io
+
 from monotonic_align import maximum_path
 from monotonic_align import mask_from_lens
 from monotonic_align.core import maximum_path_c
@@ -10,6 +12,7 @@ import torchaudio
 import librosa
 import matplotlib.pyplot as plt
 from munch import Munch
+import soundfile as sf
 
 
 def maximum_path(neg_cent, mask):
@@ -87,3 +90,11 @@ def recursive_munch(d):
 def log_print(message, logger):
     logger.info(message)
     print(message)
+
+
+# Convert audio to a WAV file buffer
+def audio_to_wav_buffer(audio_np, sample_rate=16000):
+    buffer = io.BytesIO()
+    sf.write(buffer, audio_np, sample_rate, format='WAV')
+    buffer.seek(0)
+    return buffer.read()  # Return bytes for logging
