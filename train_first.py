@@ -166,8 +166,11 @@ def main(config_path):
         val_dataloader
     )
 
-    for idx, i in enumerate(train_dataloaders):
-        train_dataloaders[idx] = accelerator.prepare(i)
+    ndataloaders = []
+    for i in train_dataloaders:
+        ndataloaders.append(accelerator.prepare(i))
+
+    train_dataloaders = ndataloaders
 
     # Then prepare models
     for k in model:
