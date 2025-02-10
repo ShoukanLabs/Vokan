@@ -1,7 +1,7 @@
 import os
 import librosa
 
-# === Configuration Parameters ===
+# === Configuration Parameters - (CALIBRATED FOR 48GB of VRAM) ===
 batch_size = 9  # Number of primary buckets.
 max_seconds = 16  # Maximum duration (seconds) for threshold calculations.
 duration_bin_step = 0.2  # Allowed duration window (in seconds) within each sub-bucket.
