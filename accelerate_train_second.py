@@ -307,6 +307,8 @@ def main(config_path):
         if epoch >= diff_epoch:
             start_ds = True
 
+        log_step = 0
+
         for i in range(len(train_dataloaders)):
             random_choice = random.randrange(len(train_dataloaders)) if accelerator.is_main_process else 0
 
@@ -317,7 +319,7 @@ def main(config_path):
             random_choice = int(number_tensor.item())
 
             for i, batch in enumerate(train_dataloaders[random_choice]):
-                i = i * len(batch)
+                log_step += len(batch)
                 waves = batch[0]
                 batch = [b.to(device) for b in batch[1:]]
                 texts, input_lengths, ref_texts, ref_lengths, mels, mel_input_length, ref_mels = batch
@@ -658,13 +660,13 @@ def main(config_path):
                 if (i + 1) % log_interval == 0:
                     logger.info(
                         'Epoch [%d/%d], Step [%d/%d], Loss: %.5f, Disc Loss: %.5f, Dur Loss: %.5f, CE Loss: %.5f, Norm Loss: %.5f, F0 Loss: %.5f, LM Loss: %.5f, Gen Loss: %.5f, Sty Loss: %.5f, Diff Loss: %.5f, DiscLM Loss: %.5f, GenLM Loss: %.5f'
-                        % (epoch + 1, epochs, i + 1, len(train_list) // batch_size, running_loss / log_interval, d_loss,
+                        % (epoch + 1, epochs, log_step + 1, len(train_list) // batch_size, running_loss / log_interval, d_loss,
                            loss_dur, loss_ce, loss_norm_rec, loss_F0_rec, loss_lm, loss_gen_all, loss_sty, loss_diff,
                            d_loss_slm, loss_gen_lm), main_process_only=True)
                     if accelerator.is_main_process:
                         print(
                             'Epoch [%d/%d], Step [%d/%d], Loss: %.5f, Disc Loss: %.5f, Dur Loss: %.5f, CE Loss: %.5f, Norm Loss: %.5f, F0 Loss: %.5f, LM Loss: %.5f, Gen Loss: %.5f, Sty Loss: %.5f, Diff Loss: %.5f, DiscLM Loss: %.5f, GenLM Loss: %.5f'
-                            % (epoch + 1, epochs, i + 1, len(train_list) // batch_size, running_loss / log_interval,
+                            % (epoch + 1, epochs, log_step + 1, len(train_list) // batch_size, running_loss / log_interval,
                                d_loss,
                                loss_dur, loss_ce, loss_norm_rec, loss_F0_rec, loss_lm, loss_gen_all, loss_sty,
                                loss_diff,

@@ -212,6 +212,8 @@ def main(config_path):
 
         _ = [model[key].train() for key in model]
 
+        log_step = 0
+
         for i in range(len(train_dataloaders)):
             random_choice = random.randrange(len(train_dataloaders)) if accelerator.is_main_process else 0
 
@@ -222,7 +224,7 @@ def main(config_path):
             random_choice = int(number_tensor.item())
 
             for i, batch in enumerate(train_dataloaders[random_choice]):
-                i = i * len(batch)
+                log_step += len(batch)
                 waves = batch[0]
                 batch = [b.to(device) for b in batch[1:]]
                 texts, input_lengths, _, _, mels, mel_input_length, _ = batch
@@ -386,7 +388,7 @@ def main(config_path):
                     log_print ('Epoch [%d/%d], Step [%d/%d], Mel Loss: %.5f, Gen Loss: %.5f, Disc Loss: %.5f, Mono Loss: %.5f, S2S Loss: %.5f, SLM Loss: %.5f'
                             %(epoch+1,
                               epochs,
-                              i+1,
+                              log_step+1,
                               sum([len(dataloaderd) for dataloaderd in train_dataloaders]),
                               running_loss / log_interval,
                               loss_gen_all,
