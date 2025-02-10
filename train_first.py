@@ -217,7 +217,7 @@ def main(config_path):
 
         for _ in range(len(train_dataloaders)):
             with accelerator.main_process_first():
-                random_choice = random.randrange(len(train_dataloaders)) if accelerator.is_main_process() else 0
+                random_choice = random.randrange(len(train_dataloaders)) if accelerator.is_main_process else 0
 
                 number_tensor = torch.tensor(random_choice).to(device)
                 number_tensor = accelerate.utils.broadcast(number_tensor, 0)
@@ -226,7 +226,8 @@ def main(config_path):
                 random_choice = int(number_tensor.item())
 
             for i, batch in enumerate(train_dataloaders[random_choice]):
-                if accelerator.is_main_process():
+                print(f"Starting batch size {len(batch[0])}")
+                if accelerator.is_main_process:
                     log_step += len(batch[0])
                 waves = batch[0]
                 batch = [b.to(device) for b in batch[1:]]
