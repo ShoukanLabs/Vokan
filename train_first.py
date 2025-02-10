@@ -218,7 +218,7 @@ def main(config_path):
         for i in range(len(train_dataloaders)):
             random_choice = random.randrange(len(train_dataloaders)) if accelerator.is_main_process else 0
 
-            number_tensor = torch.tensor(random_choice)
+            number_tensor = torch.tensor(random_choice).to(accelerator.device)
             number_tensor = accelerate.utils.broadcast(number_tensor, 0)
 
             # Convert the broadcasted tensor back to a Python int.
