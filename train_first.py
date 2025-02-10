@@ -222,6 +222,7 @@ def main(config_path):
             random_choice = int(number_tensor.item())
 
             for i, batch in enumerate(train_dataloaders[random_choice]):
+                i = i * len(batch)
                 waves = batch[0]
                 batch = [b.to(device) for b in batch[1:]]
                 texts, input_lengths, _, _, mels, mel_input_length, _ = batch
