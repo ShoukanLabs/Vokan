@@ -311,13 +311,14 @@ def main(config_path):
         log_step = 0
 
         for _ in range(len(train_dataloaders)):
-            random_choice = random.randrange(len(train_dataloaders)) if accelerator.is_main_process() else 0
+            with accelerator.main_process_first():
+                random_choice = random.randrange(len(train_dataloaders)) if accelerator.is_main_process() else 0
 
-            number_tensor = torch.tensor(random_choice).to(device)
-            number_tensor = accelerate.utils.broadcast(number_tensor, 0)
+                number_tensor = torch.tensor(random_choice).to(device)
+                number_tensor = accelerate.utils.broadcast(number_tensor, 0)
 
-            # Convert the broadcasted tensor back to a Python int.
-            random_choice = int(number_tensor.item())
+                # Convert the broadcasted tensor back to a Python int.
+                random_choice = int(number_tensor.item())
 
             for i, batch in enumerate(train_dataloaders[random_choice]):
                 if accelerator.is_main_process():
