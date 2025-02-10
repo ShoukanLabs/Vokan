@@ -215,7 +215,7 @@ def main(config_path):
 
         log_step = 0
 
-        for i in range(len(train_dataloaders)):
+        for _ in range(len(train_dataloaders)):
             random_choice = random.randrange(len(train_dataloaders)) if accelerator.is_main_process() else 0
 
             number_tensor = torch.tensor(random_choice).to(device)
