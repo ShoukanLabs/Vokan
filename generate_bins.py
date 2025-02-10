@@ -7,7 +7,7 @@ max_seconds = 16  # Maximum duration (seconds) for threshold calculations.
 duration_bin_step = 0.2  # Allowed duration window (in seconds) within each sub-bucket.
 
 # Specify the output directory where the batch text files will be written.
-output_dir = "data_paths/output_batches"  # Change this to your desired directory path.
+output_dir = "data_paths/"  # Change this to your desired directory path.
 os.makedirs(output_dir, exist_ok=True)
 
 # === Primary Bucketing Based on FLOORS ===
