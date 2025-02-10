@@ -335,7 +335,7 @@ def create_batched_dataloaders(train_dir,
         # We only care about .txt files that follow the naming convention.
         if filename.endswith(".txt") and "wavs_batch" in filename:
             # Extract the batch size from the filename.
-            match = re.search(r"wavs_batch\[(\d+)\]", filename)
+            match = re.search(r"wavs_batch_(\d+)_", filename)
             if match:
                 local_batch_size = int(match.group(1))
             else:

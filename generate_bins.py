@@ -112,7 +112,7 @@ for primary_idx, sub_buckets in enumerate(tqdm(sub_grouped_entries,
         if not sub_bucket:
             continue
 
-        file_name = f"wavs_batch[{primary_idx}]_{len(sub_bucket)}_{sub_idx}.txt"
+        file_name = f"wavs_batch_{primary_idx}_{len(sub_bucket)}_{sub_idx}.txt"
         output_path = os.path.join(output_dir, file_name)
 
         with open(output_path, "w", encoding="utf-8") as f:
