@@ -151,6 +151,7 @@ def main(config_path):
     
     model_params = recursive_munch(config['model_params'])
     multispeaker = model_params.multispeaker
+    model_params["sr"] = sr
     model = build_model(model_params, text_aligner, pitch_extractor, plbert)
 
     best_loss = float('inf')  # best test loss

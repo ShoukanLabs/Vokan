@@ -36,15 +36,17 @@ def maximum_path(neg_cent, mask):
 
 
 def get_data_path_list(train_path=None, val_path=None):
-    if train_path is None:
-        train_path = "Data/train_list.txt"
-    if val_path is None:
-        val_path = "Data/val_list.txt"
+    if train_path is not None:
+        with open(train_path, "r", encoding="utf-8", errors="ignore") as f:
+            train_list = f.readlines()
+    else:
+        train_list = None
 
-    with open(train_path, "r", encoding="utf-8", errors="ignore") as f:
-        train_list = f.readlines()
-    with open(val_path, "r", encoding="utf-8", errors="ignore") as f:
-        val_list = f.readlines()
+    if val_path is not None:
+        with open(val_path, "r", encoding="utf-8", errors="ignore") as f:
+            val_list = f.readlines()
+    else:
+        val_list = None
 
     return train_list, val_list
 

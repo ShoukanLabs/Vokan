@@ -18,7 +18,7 @@ PLBERT_dir: 'StyleTTS2Utils/PLBERT/'
 
 
 data_params:
-  train_data: data_paths/train_data_filtered.txt
+  train_data: data_paths/
   val_data: data_paths/val_data_filtered.txt
   root_path: ""
   OOD_data: data_paths/ood_data_filtered.txt
